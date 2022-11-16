@@ -20,6 +20,6 @@ jobs:
         id: pull
         uses: tretuna/sync-branches@1.2.0
         with:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+          GITHUB_TOKEN: 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
           FROM_BRANCH: 'master'
           TO_BRANCH: 'develop'
