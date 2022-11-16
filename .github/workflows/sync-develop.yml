@@ -1,9 +1,10 @@
 name: Sync Back to Develop
 
 on:
-  push:
+  pull_request_target:
     branches:
       - main
+    types: [ opened,synchronize ]
 
 jobs:
   sync-branches:
@@ -21,5 +22,4 @@ jobs:
         uses: tretuna/sync-branches@1.2.0
         with:
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-          FROM_BRANCH: 'main'
-          TO_BRANCH: 'develop'
+          src-branch: ${{ github.event.pull_request.head.ref }}
