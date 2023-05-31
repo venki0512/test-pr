@@ -1,0 +1,50 @@
+name: Stop ECS Service
+on:
+  workflow_dispatch:
+    inputs:
+      cluster-name:
+        description: 'ECS Cluster Name'
+        required: true
+      service-name:
+        description: 'ECS Service Name'
+        required: true
+      ssm-parameter-name:
+        description: 'SSM Parameter Name'
+        required: true
+
+jobs:
+  stop_service:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: <your-aws-region>
+
+      - name: Check ECS service status
+        id: ecs_status
+        run: |
+          status=$(aws ecs describe-services --cluster ${{ github.event.inputs.cluster-name }} --services ${{ github.event.inputs.service-name }} --query 'services[0].status')
+          echo "::set-output name=status::$status"
+
+      - name: Get running task count
+        id: task_count
+        run: |
+          count=$(aws ecs describe-services --cluster ${{ github.event.inputs.cluster-name }} --services ${{ github.event.inputs.service-name }} --query 'services[0].runningCount')
+          echo "::set-output name=count::$count"
+
+      - name: Stop ECS service
+        if: steps.ecs_status.outputs.status == 'ACTIVE'
+        run: |
+          aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
+
+      - name: Store running task count
+        if: steps.ecs_status.outputs.status == 'ACTIVE'
+        run: |
+          aws ssm put-parameter --name ${{ github.event.inputs.ssm-parameter-name }} --value ${{ steps.task_count.outputs.count }} --type String --overwrite
