@@ -8,9 +8,9 @@ on:
       service-name:
         description: 'ECS Service Name'
         required: true
-      ssm-parameter-name:
-        description: 'SSM Parameter Name'
-        required: true
+#       ssm-parameter-name:
+#         description: 'SSM Parameter Name'
+#         required: true
 
 jobs:
   stop_service:
