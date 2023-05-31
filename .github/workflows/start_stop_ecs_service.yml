@@ -25,7 +25,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: <your-aws-region>
+          aws-region: eu-west-1
 
       - name: Check ECS service status
         id: ecs_status
@@ -38,13 +38,3 @@ jobs:
         run: |
           count=$(aws ecs describe-services --cluster ${{ github.event.inputs.cluster-name }} --services ${{ github.event.inputs.service-name }} --query 'services[0].runningCount')
           echo "::set-output name=count::$count"
-
-      - name: Stop ECS service
-        if: steps.ecs_status.outputs.status == 'ACTIVE'
-        run: |
-          aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
-
-      - name: Store running task count
-        if: steps.ecs_status.outputs.status == 'ACTIVE'
-        run: |
-          aws ssm put-parameter --name ${{ github.event.inputs.ssm-parameter-name }} --value ${{ steps.task_count.outputs.count }} --type String --overwrite
