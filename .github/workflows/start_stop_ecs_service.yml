@@ -43,7 +43,7 @@ jobs:
           
       - name: Create SSM parameter
         run: |
-          aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value "${{ env.TASK_COUNT }} --type String --overwrite
+          aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value ${{ env.TASK_COUNT }} --type String --overwrite
 
           
           
