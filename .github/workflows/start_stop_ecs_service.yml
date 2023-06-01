@@ -52,8 +52,8 @@ jobs:
       - name: Check if SSM parameter exist
         id: check_parameter
         run: |
-          parameter=$(aws ssm describe-parameters --names ${{ github.event.inputs.cluster-name }} --query 'Parameters[0].Name' --output text || true) 
-          if [ -z "$parameter" ]; then
+          aws ssm get-parameter --name ${{ github.event.inputs.cluster-name }} --with-decryption --query 'Parameter.Value' --output text >/dev/null 2>&1
+          if [ $? -eq 0 ]; then
             echo "PARAMETER_EXISTS=false" >> $GITHUB_ENV
           else
             echo "PARAMETER_EXISTS=true" >> $GITHUB_ENV
