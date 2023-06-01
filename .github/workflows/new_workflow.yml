@@ -1,4 +1,4 @@
-name: Stop ECS Service
+name: My cluster
 on:
   workflow_dispatch:
     inputs:
