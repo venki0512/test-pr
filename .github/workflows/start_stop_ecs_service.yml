@@ -42,7 +42,6 @@ jobs:
           echo "Running Task Count: $count"
       
       - name: Check task count and stop pipeline if no tasks running
-        if: steps.ecs_status.outputs.status == 'ACTIVE'
         run: |
           if [ "$count" -eq 0 ]; then
             echo "No tasks running stopping the pipeline"
@@ -50,9 +49,8 @@ jobs:
           fi
           
       - name: Create or update SSM parameter
-#         if: steps.ecs_status.outputs.status == 'ACTIVE'
         run: |
-          aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value $count --type String --overwrite --region eu-west-1
+          aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value "$count" --type String --overwrite --region eu-west-1
 
         
           
