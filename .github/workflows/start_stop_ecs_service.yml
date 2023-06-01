@@ -36,22 +36,25 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
-
+          
+      - name: Get the cluster and service names
+        run: |
+          service_name=${{ github.event.inputs.aws-account }}-${{ github.event.inputs.application-name }}-${{ github.event.inputs.environment }}
+          cluster_name=${{ github.event.inputs.aws-account }}-${{ github.event.inputs.application-name }}-${{ github.event.inputs.environment }}
+          echo "SERVICE_NAME=$service_name" >> $GITHUB_ENV
+          echo "CLUSTER_NAME=$cluster_name" >> $GITHUB_ENV
+          
       - name: Check ECS service status
         id: ecs_status
         run: |
-          status=$(aws ecs describe-services --cluster ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --services ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --query 'services[0].status')
+          status=$(aws ecs describe-services --cluster ${{ env.CLUSTER_NAME }} --services ${{ env.SERVICE_NAME }} --query 'services[0].status')
           echo "Service_Status=$status" >> $GITHUB_ENV
           echo "Service status: $status"
-          if [[ $status == 'ClusterNotFoundException' ]]; then
-            echo "::error::ECS service not found: $service_name"
-            exit 1
-          fi
 
       - name: Get running task count
         id: task_count
         run: |
-          count=$(aws ecs describe-services --cluster ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --services ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --query 'services[0].runningCount')
+          count=$(aws ecs describe-services --cluster ${{ env.CLUSTER_NAME }} --services ${{ env.SERVICE_NAME }} --query 'services[0].runningCount')
           echo "TASK_COUNT=$count" >> $GITHUB_ENV
           echo "Running Task Count: $count"
           
@@ -67,7 +70,7 @@ jobs:
       - name: Create SSM parameter
         if: ${{ steps.check_task_count.outputs.status == 'There are running tasks. Continuing pipeline execution.' }}
         run: |
-          aws ssm put-parameter --name --cluster ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --services ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --value ${{ env.TASK_COUNT }} --type String --overwrite
+          aws ssm put-parameter --name --cluster ${{ env.CLUSTER_NAME }} --value ${{ env.TASK_COUNT }} --type String --overwrite
 
           
           
