@@ -52,7 +52,7 @@ jobs:
           fi
           
       - name: Create SSM parameter
-        if: step.check_task_count.output.task_count_zero != 'true'
+        if: steps.check_task_count.output.task_count_zero != 'true'
         run: |
           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
           aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value ${{ env.TASK_COUNT }} --type String --overwrite
