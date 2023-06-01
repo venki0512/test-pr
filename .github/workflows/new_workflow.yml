@@ -56,17 +56,17 @@ jobs:
       
       # Starting the task
       
-      - name: Read count value from SSM parameter
-        id: read_ssm_parameter
-        run: |
-          count=$(aws ssm get-parameter --name ${{ github.event.inputs.cluster-name }} --query 'Parameter.Value' --output text)
-          echo "TASK_COUNT=$count" >> $GITHUB_ENV
-          echo "Read Task Count from SSM: $count"
+#       - name: Read count value from SSM parameter
+#         id: read_ssm_parameter
+#         run: |
+#           count=$(aws ssm get-parameter --name ${{ github.event.inputs.cluster-name }} --query 'Parameter.Value' --output text)
+#           echo "TASK_COUNT=$count" >> $GITHUB_ENV
+#           echo "Read Task Count from SSM: $count"
 
-      - name: Start tasks
-        run: |
-          aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count ${{ env.TASK_COUNT }}
-          echo "Started"
+#       - name: Start tasks
+#         run: |
+#           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count ${{ env.TASK_COUNT }}
+#           echo "Started"
 
 
 
