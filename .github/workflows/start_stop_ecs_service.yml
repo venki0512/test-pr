@@ -39,7 +39,7 @@ jobs:
           
       - name: Get the cluster and service names
         run: |
-          service_name=${{ github.event.inputs.aws-account }}-${{ github.event.inputs.application-name }}-${{ github.event.inputs.environment }}
+          service_name=${{ github.event.inputs.application-name }}-${{ github.event.inputs.environment }}-cluster-service
           cluster_name=${{ github.event.inputs.aws-account }}-${{ github.event.inputs.application-name }}-${{ github.event.inputs.environment }}
           echo "SERVICE_NAME=$service_name" >> $GITHUB_ENV
           echo "CLUSTER_NAME=$cluster_name" >> $GITHUB_ENV
