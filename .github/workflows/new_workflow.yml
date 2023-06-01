@@ -59,7 +59,29 @@ jobs:
           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
           echo "Stopped running tasks"        
 
+      - name: Read count value from SSM parameter
+        id: read_ssm_parameter
+        run: |
+          count=$(aws ssm get-parameter --name ${{ github.event.inputs.cluster-name }} --query 'Parameter.Value' --output text)
+          echo "TASK_COUNT=$count" >> $GITHUB_ENV
+          echo "Read Task Count from SSM: $count"
 
+      - name: Manual Approval
+        id: approval
+        if: always()
+        uses: rlespinasse/action-conditional@v2
+        with:
+          args: |
+            --confirm
+            --approval-comment "The task count is ${{ env.TASK_COUNT }}. Proceed with starting tasks?"
+            --approved-label "Start Tasks"
+            --denied-label "Cancel"
+
+      - name: Start tasks
+        if: steps.approval.outputs.result == 'approved'
+        run: |
+          aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count ${{ env.TASK_COUNT }}
+          echo "Started tasks"
 
 
 
