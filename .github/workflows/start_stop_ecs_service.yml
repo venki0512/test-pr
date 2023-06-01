@@ -2,18 +2,28 @@ name: Stop ECS Service
 on:
   workflow_dispatch:
     inputs:
-      cluster-name:
-        description: 'ECS Cluster Name'
+      aws-account:
+        type: choice
+        description: "Which aws account service is hosted"
+        options:
+          - adl
+          - adx
+          - adv
+      application-name:
+        description: 'Enter Application Name'
         required: true
-      service-name:
-        description: 'ECS Service Name'
-        required: true
-#       ssm-parameter-name:
-#         description: 'SSM Parameter Name'
-#         required: true
+      environment:
+        type: choice
+        description: "which environment to build"
+        options:
+          - dev
+          - qastg
+          - qalv
+          - pqa
+        default: "dev"
 
 jobs:
-  stop_service:
+  stop_start_ecs_service:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,14 +40,14 @@ jobs:
       - name: Check ECS service status
         id: ecs_status
         run: |
-          status=$(aws ecs describe-services --cluster ${{ github.event.inputs.cluster-name }} --services ${{ github.event.inputs.service-name }} --query 'services[0].status')
+          status=$(aws ecs describe-services --cluster ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --services ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --query 'services[0].status')
           echo "Service_Status=$status" >> $GITHUB_ENV
           echo "Service status: $status"
 
       - name: Get running task count
         id: task_count
         run: |
-          count=$(aws ecs describe-services --cluster ${{ github.event.inputs.cluster-name }} --services ${{ github.event.inputs.service-name }} --query 'services[0].runningCount')
+          count=$(aws ecs describe-services --cluster ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --services ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --query 'services[0].runningCount')
           echo "TASK_COUNT=$count" >> $GITHUB_ENV
           echo "Running Task Count: $count"
           
@@ -52,7 +62,7 @@ jobs:
           
       - name: Create SSM parameter
         run: |
-          aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value ${{ env.TASK_COUNT }} --type String --overwrite
+          aws ssm put-parameter --name --cluster ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --services ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --value ${{ env.TASK_COUNT }} --type String --overwrite
 
           
           
