@@ -56,7 +56,7 @@ jobs:
     
   start_service:
     runs-on: ubuntu-latest
-    
+    needs: stop_service
     steps:
       - name: Read count value from SSM parameter
         id: read_ssm_parameter
