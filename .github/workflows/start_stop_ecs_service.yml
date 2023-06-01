@@ -53,7 +53,7 @@ jobs:
           
       - name: Check running task count
         run: |
-          if [[ ${{ env.TASK_COUNT }} == "0" ]]; then
+          if [[ ${{ env.TASK_COUNT }} == "null" ]]; then
             echo "No running tasks. Stopping pipeline execution."
             exit 0
           else
