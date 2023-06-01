@@ -41,6 +41,15 @@ jobs:
           echo "TASK_COUNT=$count" >> $GITHUB_ENV
           echo "Running Task Count: $count"
           
+      - name: Check running task count
+        run: |
+          if [[ ${{ env.TASK_COUNT }} == "0" ]]; then
+            echo "No running tasks. Stopping pipeline execution."
+            exit 0
+          else
+            echo "There are running tasks. Continuing pipeline execution."
+          fi
+          
       - name: Create SSM parameter
         run: |
           aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value ${{ env.TASK_COUNT }} --type String --overwrite
