@@ -49,11 +49,16 @@ jobs:
             exit 1
           fi
           
-      - name: Create parameter and store task count
-        if: steps.ecs_status.ouputs.status == 'ACTIVE' 
+      - name: Check if SSM parameter exists
+        id: check_parameter
         run: |
-          aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value $count --type String --overwrite
-          
+          aws ssm get-parameter --name ${{ github.event.inputs.cluster-name }} --query 'Parameter.Value' --output text --region eu-west-1 > /dev/null 2>&1
+          echo "::set-output name=parameter_exists::$?"
+
+      - name: Create or update SSM parameter
+        if: steps.ecs_status.outputs.status == 'ACTIVE' && steps.check_parameter.outputs.parameter_exists == '1'
+        run: |
+          aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value $count --type String --overwrite --region eu-west-1
           
           
           
