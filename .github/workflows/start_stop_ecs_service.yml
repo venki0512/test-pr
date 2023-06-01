@@ -49,6 +49,7 @@ jobs:
           fi
           
       - name: Create or update SSM parameter
+        if: steps.ecs_status.outputs.status == 'ACTIVE' && steps.task_count.outputs.count != ''
         run: |
           aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value "$count" --type String --overwrite --region eu-west-1
 
