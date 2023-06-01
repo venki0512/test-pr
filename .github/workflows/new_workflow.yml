@@ -8,6 +8,8 @@ on:
       service-name:
         description: 'ECS Service Name'
         required: true
+      action:
+        default: approved
 #       ssm-parameter-name:
 #         description: 'SSM Parameter Name'
 #         required: true
@@ -57,7 +59,7 @@ jobs:
   start_service:
     runs-on: ubuntu-latest
     needs: stop_service
-    if: github.event_name == 'workflow_dispatch' && github.event.action == 'approved'
+    if: github.event.action == 'approved'
     
     steps:
       - name: Checkout code
