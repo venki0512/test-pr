@@ -43,13 +43,17 @@ jobs:
       
       - name: Check task count and stop pipeline if no tasks running
         run: |
+          if [ -z "$count" ] || ! [[ "$count" =~ ^[0-9]+$ ]]; then
+            echo "Invalid task count value or task count not found"
+            exit 1
+          fi
+          
           if [ "$count" -eq 0 ]; then
             echo "No tasks running stopping the pipeline"
             exit 1
           fi
           
       - name: Create or update SSM parameter
-        if: steps.task_count.outputs.count != ''
         run: |
           aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value "$count" --type String --overwrite --region eu-west-1
 
