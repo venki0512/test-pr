@@ -69,19 +69,15 @@ jobs:
       - name: Manual Approval
         id: approval
         if: always()
-        uses: rlespinasse/action-conditional@v2
+        uses: juliangruber/approve-commit-action@v1
         with:
-          args: |
-            --confirm
-            --approval-comment "The task count is ${{ env.TASK_COUNT }}. Proceed with starting tasks?"
-            --approved-label "Start Tasks"
-            --denied-label "Cancel"
+          issue-message: "The task count is ${{ env.TASK_COUNT }}. Proceed with starting tasks?"
 
       - name: Start tasks
-        if: steps.approval.outputs.result == 'approved'
+        if: steps.approval.outputs.approved == 'true'
         run: |
           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count ${{ env.TASK_COUNT }}
-          echo "Started tasks"
+          echo "Started
 
 
 
