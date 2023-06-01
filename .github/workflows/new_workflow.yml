@@ -53,3 +53,20 @@ jobs:
       - name: Create SSM parameter
         run: |
           aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value ${{ env.TASK_COUNT }} --type String --overwrite
+
+      - name: Stop running tasks
+        run: |
+          aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
+          echo "Stopped running tasks"        
+
+
+
+
+
+
+
+
+
+
+
+
