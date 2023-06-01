@@ -40,6 +40,10 @@ jobs:
           count=$(aws ecs describe-services --cluster ${{ github.event.inputs.cluster-name }} --services ${{ github.event.inputs.service-name }} --query 'services[0].runningCount')
           echo "TASK_COUNT=$count" >> $GITHUB_ENV
           echo "Running Task Count: $count"
+          
+      - name: Create SSM parameter
+        run: |
+          aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value "${{ env.TASK_COUNT }} --type String --overwrite
 
           
           
