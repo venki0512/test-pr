@@ -54,7 +54,7 @@ jobs:
         run: |
           aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value $count --type String --overwrite --region eu-west-1
 
-          
+        
           
           
           
