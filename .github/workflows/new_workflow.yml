@@ -66,15 +66,7 @@ jobs:
           echo "TASK_COUNT=$count" >> $GITHUB_ENV
           echo "Read Task Count from SSM: $count"
 
-      - name: Manual Approval
-        id: approval
-        if: always()
-        uses: juliangruber/approve-commit-action@v1
-        with:
-          issue-message: "The task count is ${{ env.TASK_COUNT }}. Proceed with starting tasks?"
-
       - name: Start tasks
-        if: steps.approval.outputs.approved == 'true'
         run: |
           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count ${{ env.TASK_COUNT }}
           echo "Started
