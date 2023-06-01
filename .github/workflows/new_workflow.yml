@@ -57,6 +57,7 @@ jobs:
   start_service:
     runs-on: ubuntu-latest
     needs: stop_service
+    if: github.event_name == 'workflow_dispatch' && github.event.action == 'approved'
     
     steps:
       - name: Checkout code
