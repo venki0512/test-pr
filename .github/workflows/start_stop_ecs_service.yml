@@ -61,6 +61,7 @@ jobs:
           fi
           
       - name: Create SSM parameter
+        if: ${{ steps.check_task_count.outputs.status == 'There are running tasks. Continuing pipeline execution.' }}
         run: |
           aws ssm put-parameter --name --cluster ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --services ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --value ${{ env.TASK_COUNT }} --type String --overwrite
 
