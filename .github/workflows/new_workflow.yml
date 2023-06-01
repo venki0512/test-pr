@@ -8,13 +8,6 @@ on:
       service-name:
         description: 'ECS Service Name'
         required: true
-      start-service:
-        description: 'Approve if need to start the task'
-        type: choice
-        required: true
-        options:
-         - yes
-         - no
       
 
 jobs:
@@ -61,7 +54,6 @@ jobs:
     
   start_service:
     runs-on: ubuntu-latest
-    if: ${{ github.event.inputs.start-service == 'yes' }}
     needs: stop_service
     environment:
       name: ${{ github.event.inputs.environment }}
