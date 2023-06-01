@@ -31,7 +31,7 @@ jobs:
         id: ecs_status
         run: |
           status=$(aws ecs describe-services --cluster ${{ github.event.inputs.cluster-name }} --services ${{ github.event.inputs.service-name }} --query 'services[0].status')
-          echo "status=$status" >> $GITHUB_OUTPUT
+          echo "Service_Status=$status" >> $GITHUB_ENV
           echo "Service status: $status"
 
       - name: Get running task count
@@ -40,3 +40,20 @@ jobs:
           count=$(aws ecs describe-services --cluster ${{ github.event.inputs.cluster-name }} --services ${{ github.event.inputs.service-name }} --query 'services[0].runningCount')
           echo "TASK_COUNT=$count" >> $GITHUB_ENV
           echo "Running Task Count: $count"
+      
+      - name: Check task count and stop pipeline if no tasks running
+        if: steps.ecs_status.outputs.status == 'ACTIVE'
+        run: |
+          if [ "$count" -eq 0 ]; then
+            echo "No tasks running stopping the pipeline"
+            exit 1
+          fi
+          
+      
+      
+      
+      
+      
+      
+      
+      
