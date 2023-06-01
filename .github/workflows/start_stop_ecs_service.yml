@@ -40,24 +40,7 @@ jobs:
           count=$(aws ecs describe-services --cluster ${{ github.event.inputs.cluster-name }} --services ${{ github.event.inputs.service-name }} --query 'services[0].runningCount')
           echo "TASK_COUNT=$count" >> $GITHUB_ENV
           echo "Running Task Count: $count"
-      
-      - name: Check task count and stop pipeline if no tasks running
-        run: |
-          if [ -z "$count" ] || ! [[ "$count" =~ ^[0-9]+$ ]]; then
-            echo "Invalid task count value or task count not found"
-            exit 1
-          fi
-          
-          if [ "$count" -eq 0 ]; then
-            echo "No tasks running stopping the pipeline"
-            exit 1
-          fi
-          
-      - name: Create or update SSM parameter
-        run: |
-          aws ssm put-parameter --name ${{ github.event.inputs.cluster-name }} --value "$count" --type String --overwrite --region eu-west-1
 
-        
           
           
           
