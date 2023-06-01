@@ -43,7 +43,7 @@ jobs:
           status=$(aws ecs describe-services --cluster ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --services ${{ github.event.inputs.aws-account}}-${{ github.event.inputs.application-name}}-${{ github.event.inputs.environment }} --query 'services[0].status')
           echo "Service_Status=$status" >> $GITHUB_ENV
           echo "Service status: $status"
-          if [[ $status == 'ServiceNotFound' ]]; then
+          if [[ $status == 'ClusterNotFoundException' ]]; then
             echo "::error::ECS service not found: $service_name"
             exit 1
           fi
