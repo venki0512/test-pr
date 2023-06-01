@@ -53,20 +53,22 @@ jobs:
         run: |
           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
           echo "Stopped running tasks"        
-      
-      # Starting the task
-      
-#       - name: Read count value from SSM parameter
-#         id: read_ssm_parameter
-#         run: |
-#           count=$(aws ssm get-parameter --name ${{ github.event.inputs.cluster-name }} --query 'Parameter.Value' --output text)
-#           echo "TASK_COUNT=$count" >> $GITHUB_ENV
-#           echo "Read Task Count from SSM: $count"
+    
+  start_service:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Read count value from SSM parameter
+        id: read_ssm_parameter
+        run: |
+          count=$(aws ssm get-parameter --name ${{ github.event.inputs.cluster-name }} --query 'Parameter.Value' --output text)
+          echo "TASK_COUNT=$count" >> $GITHUB_ENV
+          echo "Read Task Count from SSM: $count"
 
-#       - name: Start tasks
-#         run: |
-#           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count ${{ env.TASK_COUNT }}
-#           echo "Started"
+      - name: Start tasks
+        run: |
+          aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count ${{ env.TASK_COUNT }}
+          echo "Started"
 
 
 
