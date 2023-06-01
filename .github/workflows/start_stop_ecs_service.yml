@@ -41,13 +41,13 @@ jobs:
           echo "TASK_COUNT=$count" >> $GITHUB_ENV
           echo "Running Task Count: $count"
       
-#       - name: Check task count and stop pipeline if no tasks running
-#         if: steps.ecs_status.outputs.status == 'ACTIVE'
-#         run: |
-#           if [ "$count" -eq 0 ]; then
-#             echo "No tasks running stopping the pipeline"
-#             exit 1
-#           fi
+      - name: Check task count and stop pipeline if no tasks running
+        if: steps.ecs_status.outputs.status == 'ACTIVE'
+        run: |
+          if [ "$count" -eq 0 ]; then
+            echo "No tasks running stopping the pipeline"
+            exit 1
+          fi
           
       - name: Create or update SSM parameter
         if: steps.ecs_status.outputs.status == 'ACTIVE'
