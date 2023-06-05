@@ -81,8 +81,8 @@ jobs:
       - name: Sleep for 2 minutes
         run: |
          if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
-         echo "Waiting for 2 minutes..."
-         sleep 120
+         echo "Waiting for 1 minutes..."
+         sleep 60
          else
           echo "Task count is 0. Skipping.."
          fi
