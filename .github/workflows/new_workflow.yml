@@ -72,7 +72,7 @@ jobs:
         id: running_tasks
         run: |
           if [[ "${{ env.EC2_INSTANCE_ID }}" != "0" ]]; then
-            running_tasks=$(aws ecs describe-container-instances --container-instances ${{ env.CONTAINER_INSTANCE_ARN }} --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].runningTasksCount' --output text)
+            running_tasks=$(aws ecs describe-container-instances --container-instances ${{ env.container_instance_arn }} --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].runningTasksCount' --output text)
             echo "RUNNING_TASKS=$running_tasks" >> $GITHUB_ENV
             echo "Running tasks on EC2: $running_tasks"
           else
