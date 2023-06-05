@@ -46,7 +46,7 @@ jobs:
         if: ${{ steps.task_count.outputs.TASK_COUNT == '0' }}
         run: |
           echo "Task count is zero or null. Exiting gracefully."
-          exit 1
+          exit 0
         
       - name: Create SSM parameter
         run: |
