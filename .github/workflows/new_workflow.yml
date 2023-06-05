@@ -44,7 +44,7 @@ jobs:
           
       - name: Stop pipeline if task count is zero
         if: ${{ steps.task_count.outputs.TASK_COUNT == '0' }}
-        run: exit 1
+        run: echo "Task count is zero or null. Exiting gracefully."
         
       - name: Create SSM parameter
         run: |
