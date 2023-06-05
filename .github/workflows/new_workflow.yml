@@ -42,13 +42,13 @@ jobs:
           echo "TASK_COUNT=$count" >> $GITHUB_ENV
           echo "Running Task Count: $count"
           
+      - name: Stop pipeline if task count is zero
+        if: ${{ steps.task_count.outputs.TASK_COUNT == '0' }}
+        run: exit 1
+        
       - name: Create SSM parameter
         run: |
-          if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
           aws ssm put-parameter --name /adl/nonprod/${{ github.event.inputs.cluster-name }} --value ${{ env.TASK_COUNT }} --type String --overwrite
-          else
-          echo "Task count is 0. Skipping parameter creation."
-          fi
                  
       - name: Get EC2 instance details
         id: ec2_details
