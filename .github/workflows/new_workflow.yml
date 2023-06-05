@@ -81,10 +81,14 @@ jobs:
             echo "EC2 instance ID not found. Skipping.."
           fi
           
-      - name: Stop running tasks
-        run: |
-          aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
-          echo "Stopped running tasks" 
+#       - name: Stop running tasks
+#         run: |
+#           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
+#           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
+#           echo "Stopped running tasks" 
+#           else
+#           echo "Task count is 0. Skipping.."
+#           fi
           
 
           
