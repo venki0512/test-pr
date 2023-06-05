@@ -78,10 +78,10 @@ jobs:
           echo "Task count is 0. Skipping.."
           fi
 
-      - name: Sleep for 3 minutes
+      - name: Sleep for 2 minutes
         run: |
-         echo "Waiting for 3 minutes..."
-         sleep 180
+         echo "Waiting for 2 minutes..."
+         sleep 120
     
       - name: Check running tasks on EC2
         id: running_tasks
