@@ -65,7 +65,7 @@ jobs:
           echo "EC2_INSTANCE_ID=$ec2_instance_id" >> $GITHUB_ENV
           echo "EC2 instance ID: $ec2_instance_id"
           else
-          echo "Task count is 0. Skipping parameter creation."
+          echo "Task count is 0. Skipping.."
           fi
 
       - name: Stop running tasks
@@ -76,16 +76,23 @@ jobs:
       - name: Check other running tasks
         id: other_running_tasks
         run: |
+          if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
           other_tasks_count=$(aws ecs describe-container-instances --container-instances $container_instance_arn --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].runningTasksCount')
           echo "OTHER_RUNNING_TASKS_COUNT=$other_tasks_count" >> $GITHUB_ENV
           echo "Other Running Tasks Count: $other_tasks_count"
+          else
+          echo "Task count is 0. Skipping.."
+          fi
 
       - name: Terminate EC2 instance if other running tasks count is zero
         if: ${{ steps.other_running_tasks.outputs.OTHER_RUNNING_TASKS_COUNT == '0' }}
         run: |
+          if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
           echo "No other running tasks. Terminating EC2 instance: $ec2_instance_id"
           aws ec2 terminate-instances --instance-ids $ec2_instance_id
-          
+          else
+          echo "Task count is 0. Skipping.."
+          fi
           
 #       - name: Check other running tasks
 #         id: other_running_tasks
