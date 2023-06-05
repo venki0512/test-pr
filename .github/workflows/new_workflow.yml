@@ -69,6 +69,15 @@ jobs:
           echo "Task count is 0. Skipping.."
           fi
           
+      - name: Stop running tasks
+        run: |
+          if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
+          aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
+          echo "Stopped running tasks" 
+          else
+          echo "Task count is 0. Skipping.."
+          fi
+
       - name: Check running tasks on EC2
         id: running_tasks
         run: |
@@ -88,14 +97,7 @@ jobs:
           
           
           
-#       - name: Stop running tasks
-#         run: |
-#           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
-#           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
-#           echo "Stopped running tasks" 
-#           else
-#           echo "Task count is 0. Skipping.."
-#           fi
+
         
 #       - name: Stop running tasks
 #         run: |
