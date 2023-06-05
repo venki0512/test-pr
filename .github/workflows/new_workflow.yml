@@ -80,8 +80,12 @@ jobs:
 
       - name: Sleep for 2 minutes
         run: |
+         if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
          echo "Waiting for 2 minutes..."
          sleep 120
+         else
+          echo "Task count is 0. Skipping.."
+         fi
     
       - name: Check running tasks on EC2
         id: running_tasks
