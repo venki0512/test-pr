@@ -58,10 +58,9 @@ jobs:
           # Extract the task ID from the ARN
           task_id=$(basename "$task_arn" | tr -d '"')
           echo "Task ID: $task_id"
-          container_instance_arn=$(aws ecs describe-tasks --cluster ${{ github.event.inputs.cluster-name }} --tasks $task_id --query 'tasks[0].containerInstanceArn')
+          container_instance_arn=$(aws ecs describe-tasks --cluster ${{ github.event.inputs.cluster-name }} --tasks $task_id --query 'tasks[0].containerInstanceArn' --output text)
           echo "container instance arn is $container_instance_arn"
-          echo "Cluser name is: ${{ github.event.inputs.cluster-name }}"
-          ec2_instance_id=$(aws ecs describe-container-instances --container-instances $container_instance_arn --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].ec2InstanceId')
+          ec2_instance_id=$(aws ecs describe-container-instances --container-instances $container_instance_arn --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].ec2InstanceId' --output text)
           echo "EC2_INSTANCE_ID=$ec2_instance_id" >> $GITHUB_ENV
           echo "EC2 instance ID: $ec2_instance_id"
 
