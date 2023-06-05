@@ -78,16 +78,26 @@ jobs:
           echo "Task count is 0. Skipping.."
           fi
 
+#       - name: Check running tasks on EC2
+#         id: running_tasks
+#         run: |
+#           if [[ "${{ env.EC2_INSTANCE_ID }}" != "0" ]]; then
+#             running_tasks=$(aws ecs describe-container-instances --container-instances ${{ env.CONTAINER_INSTANCE_ARN }} --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].runningTasksCount' --output text)
+#             echo "RUNNING_TASKS=$running_tasks" >> $GITHUB_ENV
+#             echo "Running tasks on EC2: $running_tasks"
+#           else
+#             echo "No running tasks on EC2."
+#           fi
       - name: Check running tasks on EC2
         id: running_tasks
         run: |
-          if [[ "${{ env.EC2_INSTANCE_ID }}" != "0" ]]; then
-            running_tasks=$(aws ecs describe-container-instances --container-instances ${{ env.CONTAINER_INSTANCE_ARN }} --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].runningTasksCount' --output text)
-            echo "RUNNING_TASKS=$running_tasks" >> $GITHUB_ENV
-            echo "Running tasks on EC2: $running_tasks"
-          else
-            echo "No running tasks on EC2."
-          fi
+         if [[ -n "${{ env.EC2_INSTANCE_ID }}" ]]; then
+          running_tasks=$(aws ecs describe-container-instances --container-instances ${{ env.CONTAINER_INSTANCE_ARN }} --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].runningTasksCount' --output text)
+          echo "RUNNING_TASKS=$running_tasks" >> $GITHUB_ENV
+          echo "Running tasks on EC2: $running_tasks"
+         else
+          echo "No running tasks on EC2."
+         fi
           
       - name: Terminate EC2 instance if no running tasks
         if: ${{ env.RUNNING_TASKS == 0 }}
