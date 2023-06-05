@@ -68,7 +68,13 @@ jobs:
         run: |
           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
           echo "Stopped running tasks" 
-          
+
+      - name: Check other running tasks
+        id: other_running_tasks
+        run: |
+          other_tasks_count=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance $container_instance_arn --query 'length(taskArns) - 1')
+          echo "OTHER_RUNNING_TASKS_COUNT=$other_tasks_count" >> $GITHUB_ENV
+          echo "Other Running Tasks Count: $other_tasks_count"
           
 #       - name: Check other running tasks
 #         id: other_running_tasks
