@@ -72,12 +72,15 @@ jobs:
         id: running_tasks
         run: |
           if [[ "${{ env.EC2_INSTANCE_ID }}" != "" ]]; then
-            tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --query "taskArns[?contains(@, '${{ env.EC2_INSTANCE_ID }}')]")
-            task_count=$(echo $tasks | jq length)
+            container_instances=$(aws ecs list-container-instances --cluster ${{ github.event.inputs.cluster-name }} --filter "attribute:ec2-instance-id == ${{ env.EC2_INSTANCE_ID }}" --query 'containerInstanceArns' --output text)
+            task_count=0
+            for arn in $container_instances; do
+              tasks=$(aws ecs describe-container-instances --cluster ${{ github.event.inputs.cluster-name }} --container-instances $arn --query 'containerInstances[0].runningTasksCount' --output text)
+              task_count=$((task_count + tasks))
+            done
             echo "task count: $task_count"
             echo "CURRENT_RUNNING_TASKS=$task_count" >> $GITHUB_ENV
             echo "Current Running Tasks on EC2 instance: $task_count"
-            echo "Running Task ARNs: $tasks"
           else
             echo "EC2 instance ID not found. Skipping.."
           fi
