@@ -68,7 +68,16 @@ jobs:
           echo "Task count is 0. Skipping.."
           fi
           
-
+      - name: Check running tasks on EC2
+        id: running_tasks
+        run: |
+          if [[ "${{ env.EC2_INSTANCE_ID }}" != "0" ]]; then
+            running_tasks=$(aws ecs describe-instances --instance-ids ${{ env.EC2_INSTANCE_ID }} --cluster ${{ github.event.inputs.cluster-name }} --query 'reservations[].instances[].runningTasksCount' --output text)
+            echo "RUNNING_TASKS=$running_tasks" >> $GITHUB_ENV
+            echo "Running tasks on EC2: $running_tasks"
+          else
+            echo "No running tasks on EC2."
+          fi
           
 #       - name: Stop running tasks
 #         run: |
