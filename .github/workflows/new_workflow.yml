@@ -48,12 +48,7 @@ jobs:
           else
           echo "Task count is 0. Skipping parameter creation."
           fi
-          
-      - name: Stop running tasks
-        run: |
-          aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
-          echo "Stopped running tasks" 
-          
+                 
       - name: Get EC2 instance details
         id: ec2_details
         run: |
@@ -62,7 +57,13 @@ jobs:
           ec2_instance_id=$(aws ecs describe-container-instances --container-instances $container_instance_arn --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].ec2InstanceId')
           echo "EC2_INSTANCE_ID=$ec2_instance_id" >> $GITHUB_ENV
           echo "EC2 instance ID: $ec2_instance_id"
-      
+
+      - name: Stop running tasks
+        run: |
+          aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
+          echo "Stopped running tasks" 
+          
+          
 #       - name: Check other running tasks
 #         id: other_running_tasks
 #         run: |
