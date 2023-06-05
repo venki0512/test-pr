@@ -81,7 +81,7 @@ jobs:
           fi
           
       - name: Terminate EC2 instance if no running tasks
-        if: ${{ env.RUNNING_TASKS == "0" }}
+        if: ${{ env.RUNNING_TASKS == 0 }}
         run: |
           echo "Terminating EC2 instance: ${{ env.EC2_INSTANCE_ID }}"
           aws ec2 terminate-instances --instance-ids ${{ env.EC2_INSTANCE_ID }}
