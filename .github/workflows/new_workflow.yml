@@ -72,32 +72,8 @@ jobs:
         run: |
           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
           echo "Stopped running tasks" 
-
-      - name: Check other running tasks
-        id: other_running_tasks
-        run: |
-          other_tasks_count=$(aws ecs describe-container-instances --container-instances $container_instance_arn --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].runningTasksCount')
-          echo "OTHER_RUNNING_TASKS_COUNT=$other_tasks_count" >> $GITHUB_ENV
-          echo "Other Running Tasks Count: $other_tasks_count"
-
-      - name: Terminate EC2 instance if other running tasks count is zero
-        if: ${{ steps.other_running_tasks.outputs.OTHER_RUNNING_TASKS_COUNT == '0' }}
-        run: |
-          echo "No other running tasks. Terminating EC2 instance: $ec2_instance_id"
-          aws ec2 terminate-instances --instance-ids $ec2_instance_id
           
-#       - name: Check other running tasks
-#         id: other_running_tasks
-#         run: |
-#           other_tasks_count=$(aws ecs describe-container-instances --container-instances $container_instance_arn --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].runningTasksCount')
-#           echo "OTHER_RUNNING_TASKS_COUNT=$other_tasks_count" >> $GITHUB_ENV
-#           echo "Other Running Tasks Count: $other_tasks_count"
 
-#       - name: Terminate EC2 instance if no other tasks are running
-#         if: ${{ env.OTHER_RUNNING_TASKS_COUNT == "0" }}
-#         run: |
-#           echo "Terminating EC2 instance: ${{ env.EC2_INSTANCE_ID }}"
-#           aws ec2 terminate-instances --instance-ids ${{ env.EC2_INSTANCE_ID }}
           
           
           
