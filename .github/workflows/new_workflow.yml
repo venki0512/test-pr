@@ -85,11 +85,11 @@ jobs:
 #           echo "OTHER_RUNNING_TASKS_COUNT=$other_tasks_count" >> $GITHUB_ENV
 #           echo "Other Running Tasks Count: $other_tasks_count"
 
-#       - name: Terminate EC2 instance if no other tasks are running
-#         if: ${{ env.OTHER_RUNNING_TASKS_COUNT == "0" }}
-#         run: |
-#           echo "Terminating EC2 instance: ${{ env.EC2_INSTANCE_ID }}"
-#           aws ec2 terminate-instances --instance-ids ${{ env.EC2_INSTANCE_ID }}
+      - name: Terminate EC2 instance if no other tasks are running
+        if: ${{ env.OTHER_RUNNING_TASKS_COUNT == "0" }}
+        run: |
+          echo "Terminating EC2 instance: ${{ env.EC2_INSTANCE_ID }}"
+          aws ec2 terminate-instances --instance-ids ${{ env.EC2_INSTANCE_ID }}
           
           
           
