@@ -72,8 +72,8 @@ jobs:
         id: running_tasks
         run: |
           if [[ "${{ env.EC2_INSTANCE_ID }}" != "" ]]; then
-            tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance ${{ env.EC2_INSTANCE_ID }} --query 'taskArns' --output text)
-            task_count=$(echo $tasks | wc -w)
+            tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --query "taskArns[?contains(@, '${{ env.EC2_INSTANCE_ID }}')]")
+            task_count=$(echo $tasks | jq length)
             echo "CURRENT_RUNNING_TASKS=$task_count" >> $GITHUB_ENV
             echo "Current Running Tasks on EC2 instance: $task_count"
             echo "Running Task ARNs: $tasks"
