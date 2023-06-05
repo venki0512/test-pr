@@ -67,7 +67,20 @@ jobs:
           else
           echo "Task count is 0. Skipping.."
           fi
-
+          
+      - name: Get current running tasks on EC2 instance
+        id: running_tasks
+        run: |
+          if [[ "${{ env.EC2_INSTANCE_ID }}" != "" ]]; then
+            tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance ${{ env.EC2_INSTANCE_ID }} --query 'taskArns' --output text)
+            task_count=$(echo $tasks | wc -w)
+            echo "CURRENT_RUNNING_TASKS=$task_count" >> $GITHUB_ENV
+            echo "Current Running Tasks on EC2 instance: $task_count"
+            echo "Running Task ARNs: $tasks"
+          else
+            echo "EC2 instance ID not found. Skipping.."
+          fi
+          
       - name: Stop running tasks
         run: |
           aws ecs update-service --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --desired-count 0
