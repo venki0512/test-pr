@@ -41,20 +41,19 @@ jobs:
           count=$(aws ecs describe-services --cluster ${{ github.event.inputs.cluster-name }} --services ${{ github.event.inputs.service-name }} --query 'services[0].runningCount')
           echo "TASK_COUNT=$count" >> $GITHUB_ENV
           echo "Running Task Count: $count"
-          
-      - name: Stop pipeline if task count is zero
-        if: ${{ steps.task_count.outputs.TASK_COUNT == '0' }}
-        run: |
-          echo "Task count is zero or null. Exiting gracefully."
-          exit 1
         
       - name: Create SSM parameter
         run: |
+          if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
           aws ssm put-parameter --name /adl/nonprod/${{ github.event.inputs.cluster-name }} --value ${{ env.TASK_COUNT }} --type String --overwrite
-                 
+          else
+          echo "Task count is 0. Skipping parameter creation."
+          fi
+          
       - name: Get EC2 instance details
         id: ec2_details
         run: |
+          if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
           task_arn=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --query 'taskArns[0]')
           echo "Arn for Task: $task_arn"
           # Extract the task ID from the ARN
@@ -65,6 +64,9 @@ jobs:
           ec2_instance_id=$(aws ecs describe-container-instances --container-instances $container_instance_arn --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].ec2InstanceId' --output text)
           echo "EC2_INSTANCE_ID=$ec2_instance_id" >> $GITHUB_ENV
           echo "EC2 instance ID: $ec2_instance_id"
+          else
+          echo "Task count is 0. Skipping parameter creation."
+          fi
 
       - name: Stop running tasks
         run: |
