@@ -55,9 +55,7 @@ jobs:
         run: |
           task_arn=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --query 'taskArns[0]')
           echo "Arn for Task: $task_arn"
-          task_id=${task_arn:0:36}  # Extract first 36 characters of the task ARN as task ID
-          echo "task id is: $task_id"
-          container_instance_arn=$(aws ecs describe-tasks --cluster ${{ github.event.inputs.cluster-name }} --tasks $task_id --query 'tasks[0].containerInstanceArn')
+          container_instance_arn=$(aws ecs describe-tasks --cluster ${{ github.event.inputs.cluster-name }} --tasks $task_arn --query 'tasks[0].containerInstanceArn')
           echo "container instance arn is $container_instance_arn"
           echo "Cluser name is: ${{ github.event.inputs.cluster-name }}"
           ec2_instance_id=$(aws ecs describe-container-instances --container-instances $container_instance_arn --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].ec2InstanceId')
