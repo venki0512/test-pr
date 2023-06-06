@@ -66,8 +66,6 @@ jobs:
           done
           echo "TASK_IDS=$task_ids" >> $GITHUB_ENV
           echo "INSTANCE_IDS=$instance_ids" >> $GITHUB_ENV
-          echo "Running Task IDs:"
-          echo "$task_ids"
           echo "Associated EC2 Instance IDs:"
           echo "$instance_ids"
           else
