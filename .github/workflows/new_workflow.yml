@@ -91,7 +91,9 @@ jobs:
           else
           echo "Task count is 0. Skipping.."
           fi
-
+          - run: cat error.log
+            if: ${{ failure() }}
+       
 
 #       - name: Stop running tasks
 #         run: |
