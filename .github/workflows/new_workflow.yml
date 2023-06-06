@@ -81,7 +81,9 @@ jobs:
           done
       
           echo -e "TASK_IDS=${task_ids[*]}\n" >> $GITHUB_ENV
+          echo "TaskIDs: $TASK_IDS"
           echo -e "INSTANCE_IDS=${instance_ids[*]}\n" >> $GITHUB_ENV
+          echo "Instance_IDs: $INSTANCE_IDS"
           else
             echo "Task count is 0. Skipping.."
           fi
