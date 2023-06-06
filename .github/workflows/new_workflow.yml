@@ -54,7 +54,7 @@ jobs:
         id: ec2_details
         run: |
           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
-          task_arn=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --query 'taskArns[]' --output text)
+          task_arn=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --query 'taskArns[*]' --output text)
           echo "Task ARNs: $task_arns"
           echo "TASK_ARN_LIST=$task_arns" >> $GITHUB_ENV
           instance_ids=""
