@@ -55,9 +55,14 @@ jobs:
         run: |
           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
           arns=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service-name ${{ github.event.inputs.service-name }} --query 'taskArns[]' --output text)
-          echo "TASK_ARNS=$arns" >> $GITHUB_ENV
-          echo "Running Task ARNs:"
-          echo "$arns"
+          ids=""
+          for arn in $arns; do
+            id=$(echo "$arn" | awk -F '/' '{print $NF}')
+            ids="$ids $id"
+          done
+          echo "TASK_IDS=$ids" >> $GITHUB_ENV
+          echo "Running Task IDs:"
+          echo "$ids"
           else
           echo "Task count is 0. Skipping.."
           fi
