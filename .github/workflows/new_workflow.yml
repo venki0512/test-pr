@@ -54,13 +54,19 @@ jobs:
         id: ec2_details
         run: |
           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
-          arns=$(aws ecs describe-tasks --cluster ${{ github.event.inputs.cluster-name }} --tasks ${{ env.TASK_IDS }} --query 'tasks[*].containers[*].runtimeId' --output text)
+          arns=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service-name ${{ github.event.inputs.service-name }} --query 'taskArns[*]' --output text)
+          task_ids=""
           instance_ids=""
           for arn in $arns; do
-            instance_id=$(aws ecs describe-container-instances --cluster ${{ github.event.inputs.cluster-name }} --container-instances $arn --query 'containerInstances[*].ec2InstanceId' --output text)
+            task_id=$(echo "$arn" | awk -F '/' '{print $NF}')
+            task_ids="$task_ids $task_id"
+            instance_id=$(aws ecs describe-tasks --cluster ${{ github.event.inputs.cluster-name }} --tasks $arn --query 'tasks[*].containers[*].runtimeId' --output text | xargs aws ecs describe-container-instances --cluster ${{ github.event.inputs.cluster-name }} --container-instances | jq -r '.containerInstances[].ec2InstanceId')
             instance_ids="$instance_ids $instance_id"
           done
+          echo "TASK_IDS=$task_ids" >> $GITHUB_ENV
           echo "INSTANCE_IDS=$instance_ids" >> $GITHUB_ENV
+          echo "Running Task IDs:"
+          echo "$task_ids"
           echo "Associated EC2 Instance IDs:"
           echo "$instance_ids"
           else
