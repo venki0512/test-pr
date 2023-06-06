@@ -68,33 +68,7 @@ jobs:
 #           else
 #           echo "Task count is 0. Skipping.."
 #           fi
-      - name: Get EC2 instance details
-        id: ec2_details
-        run: |
-          if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
-            task_arns=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --query 'taskArns[]' --output text)
-            echo "Task ARNs: $task_arns"
-            # Split the task ARNs into an array
-            IFS=$'\n' task_arn_array=($task_arns)
-            for task_arn in "${task_arn_array[@]}"; do
-              echo "Arn for Task: $task_arn"
-              # Extract the task ID from the ARN
-              task_id=$(echo "$task_arn" | awk -F/ '{print $(NF)}')
-              echo "Task ID: $task_id"
-              container_instance_arns=$(aws ecs describe-tasks --cluster ${{ github.event.inputs.cluster-name }} --tasks $task_id --query 'tasks[0].containerInstanceArn' --output text)
-              echo "Container instance ARNs: $container_instance_arns"
-              IFS="," read -ra container_instance_arn_array <<< "$container_instance_arns"
-              for container_instance_arn in "${container_instance_arn_array[@]}"; do
-                echo "Container instance ARN: $container_instance_arn"
-                echo "CONTAINER_INSTANCE_ARN=$container_instance_arn" >> $GITHUB_ENV
-                ec2_instance_id=$(aws ecs describe-container-instances --container-instances $container_instance_arn --cluster ${{ github.event.inputs.cluster-name }} --query 'containerInstances[0].ec2InstanceId' --output text)
-                echo "EC2 instance ID: $ec2_instance_id"
-                echo "EC2_INSTANCE_ID=$ec2_instance_id" >> $GITHUB_ENV
-              done
-            done
-           else
-            echo "Task count is 0. Skipping.."
-           fi
+
 
        
 
