@@ -73,11 +73,14 @@ jobs:
         id: ec2_details
         run: |
           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
-            task_arn=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --query 'taskArns[]')
-            echo "Arns for Tasks: $task_arn"
-
-            # Extract the task IDs from the ARNs
-            task_ids=$(echo "$task_arn" | jq -r '.[] | split("/") | .[1]')
+            task_arns=(${{ needs.ecs_status.outputs.service_status }})  # Split task ARNs into an array
+            task_ids=""
+            for task_arn in "${task_arns[@]}"; do
+              task_id=$(basename "$task_arn" | awk -F '/' '{print $NF}')
+              echo "Task ID: $task_id"
+              task_ids="$task_ids $task_id"
+            done
+            echo "TASK_IDS=$task_ids" >> $GITHUB_ENV
             echo "Task IDs: $task_ids"
 
             ec2_instance_ids=""
@@ -89,11 +92,12 @@ jobs:
               ec2_instance_ids="$ec2_instance_ids $ec2_instance_id"
             done
 
-           echo "EC2_INSTANCE_IDS=$ec2_instance_ids" >> $GITHUB_ENV
-           echo "EC2 instance IDs: $ec2_instance_ids"
+            echo "EC2_INSTANCE_IDS=$ec2_instance_ids" >> $GITHUB_ENV
+            echo "EC2 instance IDs: $ec2_instance_ids"
           else
-           echo "Task count is 0. Skipping.."
+            echo "Task count is 0. Skipping.."
           fi
+
 
       - name: Stop running tasks
         run: |
