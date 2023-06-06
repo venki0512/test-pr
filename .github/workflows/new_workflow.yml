@@ -57,7 +57,8 @@ jobs:
           task_arns=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service ${{ github.event.inputs.service-name }} --query 'taskArns[*]' --output text)
           echo "Task ARNs: $task_arns"
           echo "TASK_ARN_LIST=$task_arns" >> $GITHUB_ENV
-          instance_ids=""
+          task_ids=()
+          instance_ids=()
           IFS=$'\n'
           for task_arn in $task_arns; do
             task_id=$(basename "$task_arn" | tr -d '"')
