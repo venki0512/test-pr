@@ -93,9 +93,9 @@ jobs:
              echo "EC2 instance ID: $ec2_instance_id"
         
              echo "EC2_INSTANCE_ID=$ec2_instance_id" >> $GITHUB_ENV
-          done
+           done
          else
-           echo "Task count is 0. Skipping.."
+            echo "Task count is 0. Skipping.."
          fi
 
 
