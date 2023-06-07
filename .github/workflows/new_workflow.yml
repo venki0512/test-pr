@@ -94,7 +94,7 @@ jobs:
           echo "Task count is 0. Skipping.."
          fi
          
-      - name: Terminate EC2 instances without running tasks
+      - name: Terminate EC2 instances without running tasks and Downsize ASG
         run: |
           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
           IFS=' ' read -ra CONTAINER_INSTANCE_IDS <<< "$CONTAINER_INSTANCE_IDS"
