@@ -80,17 +80,19 @@ jobs:
         id: running_tasks
         run: |
           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
-          container_instance_ids=${{ steps.ec2_details.outputs.CONTAINER_INSTANCE_IDS }}
-          running_tasks=""
-          for container_instance_id in $container_instance_ids; do
-            tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance $container_instance_id --desired-status RUNNING --query 'taskArns[*]' --output text)
-            running_tasks="$running_tasks $tasks"
-          done
-          echo "Running Tasks: $running_tasks"
-          echo "RUNNING_TASKS=$running_tasks" >> $GITHUB_ENV
+            container_instance_ids=${{ steps.ec2_details.outputs.CONTAINER_INSTANCE_IDS }}
+            running_tasks=""
+            for container_instance_id in $container_instance_ids; do
+              tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance $container_instance_id --desired-status RUNNING --query 'taskArns[*]' --output text)
+              echo "Tasks for Container Instance ID $container_instance_id: $tasks"
+              running_tasks="$running_tasks $tasks"
+            done
+            echo "Running Tasks: $running_tasks"
+            echo "RUNNING_TASKS=$running_tasks" >> $GITHUB_ENV
           else
-          echo "Task count is 0. Skipping running tasks retrieval.."
+            echo "Task count is 0. Skipping running tasks retrieval.."
           fi
+
       
 #       - name: Get EC2 instance details
 #         id: ec2_details
