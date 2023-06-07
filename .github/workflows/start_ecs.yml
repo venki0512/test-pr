@@ -14,7 +14,7 @@ permissions:
       pull-requests: write # This is required for gh bot to comment PR      
 
 jobs:
-  stop_service:
+  start_service:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,15 +27,8 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-1
-    
-      - name: Manual Approval
-        id: manual_approval
-        run: |
-          echo "Please approve the pipeline to start the service."
-          echo "::set-output name=approved::true"
           
       - name: Start service
-        if: steps.manual_approval.outputs.approved == 'true'
         run: |
           count=$(aws ssm get-parameter --name /adl/nonprod/${{ github.event.inputs.service-name }} --query 'Parameter.Value' --output text)
           if [[ "$count" != "0" ]]; then
