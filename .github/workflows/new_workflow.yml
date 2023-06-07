@@ -84,7 +84,16 @@ jobs:
           else
           echo "No running tasks to stop."
           fi
-
+          
+      - name: Sleep for 1 minute
+        run: |
+         if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
+         echo "Waiting for 1 minutes..."
+         sleep 60
+         else
+          echo "Task count is 0. Skipping.."
+         fi
+         
       - name: Terminate EC2 instances without running tasks
         run: |
           IFS=' ' read -ra CONTAINER_INSTANCE_IDS <<< "$CONTAINER_INSTANCE_IDS"
