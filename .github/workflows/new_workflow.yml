@@ -79,7 +79,7 @@ jobs:
       - name: Get Running Tasks
         id: running_tasks
         run: |
-          if [[ -n ${{ env.CONTAINER_INSTANCE_IDS }} ]]; then
+          if [[ -n "${{ env.CONTAINER_INSTANCE_IDS }}" ]]; then
             container_instance_ids=${{ steps.ec2_details.outputs.CONTAINER_INSTANCE_IDS }}
             running_tasks=""
             count=0
