@@ -66,6 +66,8 @@ jobs:
           done
           echo "TASK_IDS=$task_ids" >> $GITHUB_ENV
           echo "INSTANCE_IDS=$instance_ids" >> $GITHUB_ENV
+          echo "Container_Instance_Arn=$container_instance_arn" >> $GITHUB_ENV
+          echo "Container Instance Arn list: $container_instance_arn"
           echo "Associated EC2 Instance IDs: $instance_ids"
           else
           echo "Task count is 0. Skipping.."
@@ -94,7 +96,7 @@ jobs:
           if [[ -n "${{ env.INSTANCE_IDS }}" ]]; then
             echo "Checking running tasks on instances: ${{ env.INSTANCE_IDS }}"
             for instance_id in ${{ env.INSTANCE_IDS }}; do
-              running_tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance $instance_id --query 'taskArns[*]' --output text)
+              running_tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance $container_instance_arn --query 'taskArns[*]' --output text)
               echo "Instance $instance_id has running tasks: $running_tasks"
             done
           else
