@@ -76,26 +76,6 @@ jobs:
           echo "Task count is 0. Skipping.."
           fi
           
-      - name: Get Running Tasks
-        id: running_tasks
-        run: |
-          if [[ -n "${{ env.CONTAINER_INSTANCE_IDS }}" ]]; then
-            container_instance_ids=${{ steps.ec2_details.outputs.CONTAINER_INSTANCE_IDS }}
-            running_tasks=""
-            count=0
-            for container_instance_id in $container_instance_ids; do
-              tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance $container_instance_id --desired-status RUNNING --query 'taskArns[*]' --output text)
-              running_tasks="$running_tasks $tasks"
-              count=$((count + $(echo "$tasks" | wc -w)))
-            done
-            echo "Running Tasks: $running_tasks"
-            echo "Running Tasks Count: $count"
-            echo "RUNNING_TASKS=$running_tasks" >> $GITHUB_ENV
-            echo "RUNNING_TASKS_COUNT=$count" >> $GITHUB_ENV
-          else
-             echo "Task count is 0. Skipping running tasks retrieval.."
-          fi
-
 
       
 #       - name: Get EC2 instance details
