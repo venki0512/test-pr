@@ -49,7 +49,7 @@ jobs:
           else
           echo "Task count is 0. Skipping parameter creation."
           fi
-                  
+     
       - name: Get EC2 instance details
         id: ec2_details
         run: |
@@ -57,24 +57,51 @@ jobs:
           arns=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service-name ${{ github.event.inputs.service-name }} --query 'taskArns[*]' --output text)
           task_ids=""
           instance_ids=""
-          container_instance_arns=""
+          container_instance_ids=""
           for arn in $arns; do
             task_id=$(echo "$arn" | awk -F '/' '{print $NF}')
             task_ids="$task_ids $task_id"
             container_instance_arn=$(aws ecs describe-tasks --cluster ${{ github.event.inputs.cluster-name }} --tasks $arn --query 'tasks[*].containerInstanceArn' --output text)
             instance_id=$(aws ecs describe-container-instances --cluster ${{ github.event.inputs.cluster-name }} --container-instances $container_instance_arn --query 'containerInstances[*].ec2InstanceId' --output text)
+            container_instance_id=$(aws ecs describe-container-instances --cluster ${{ github.event.inputs.cluster-name }} --container-instances $container_instance_arn --query 'containerInstances[*].containerInstanceArn' --output text | awk -F '/' '{print $NF}')
             instance_ids="$instance_ids $instance_id"
-            container_instance_arns="$container_instance_arns $container_instance_arn"
+            container_instance_ids="$container_instance_ids $container_instance_id"
           done
           echo "TASK_IDS=$task_ids" >> $GITHUB_ENV
           echo "INSTANCE_IDS=$instance_ids" >> $GITHUB_ENV
-          echo "Container_Instance_Arns=$container_instance_arn" >> $GITHUB_ENV
-          echo "Container Instance Arn list: $container_instance_arns"
+          echo "CONTAINER_INSTANCE_IDS=$container_instance_ids" >> $GITHUB_ENV
+          echo "Container Instance ID list: $container_instance_ids"
           echo "Associated EC2 Instance IDs: $instance_ids"
           else
           echo "Task count is 0. Skipping.."
           fi
 
+      
+#       - name: Get EC2 instance details
+#         id: ec2_details
+#         run: |
+#           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
+#           arns=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --service-name ${{ github.event.inputs.service-name }} --query 'taskArns[*]' --output text)
+#           task_ids=""
+#           instance_ids=""
+#           container_instance_arns=""
+#           for arn in $arns; do
+#             task_id=$(echo "$arn" | awk -F '/' '{print $NF}')
+#             task_ids="$task_ids $task_id"
+#             container_instance_arn=$(aws ecs describe-tasks --cluster ${{ github.event.inputs.cluster-name }} --tasks $arn --query 'tasks[*].containerInstanceArn' --output text)
+#             instance_id=$(aws ecs describe-container-instances --cluster ${{ github.event.inputs.cluster-name }} --container-instances $container_instance_arn --query 'containerInstances[*].ec2InstanceId' --output text)
+#             instance_ids="$instance_ids $instance_id"
+#             container_instance_arns="$container_instance_arns $container_instance_arn"
+#           done
+#           echo "TASK_IDS=$task_ids" >> $GITHUB_ENV
+#           echo "INSTANCE_IDS=$instance_ids" >> $GITHUB_ENV
+#           echo "Container_Instance_Arns=$container_instance_arn" >> $GITHUB_ENV
+#           echo "Container Instance Arn list: $container_instance_arns"
+#           echo "Associated EC2 Instance IDs: $instance_ids"
+#           else
+#           echo "Task count is 0. Skipping.."
+#           fi
+        
 #       - name: Stop running tasks
 #         run: |
 #           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
@@ -92,21 +119,7 @@ jobs:
 #          else
 #           echo "Task count is 0. Skipping.."
 #          fi
-
-      - name: Check running tasks on instances
-        run: |
-          if [[ -n "${{ env.INSTANCE_IDS }}" ]]; then
-            echo "Checking running tasks on instances: ${{ env.Container_Instance_Arns }}"
-            for container_instance_id in ${{ env.Container_Instance_Arns }}; do
-              running_tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance $Container_Instance_Arns --query 'taskArns[*]' --output text)
-              echo "Instance $instance_id has running tasks: $running_tasks"
-            done
-          else
-            echo "No associated EC2 instances found."
-          fi
-          
-          
-          
+       
 
 #       - name: Check running tasks on EC2
 #         id: running_tasks
