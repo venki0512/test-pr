@@ -66,8 +66,7 @@ jobs:
           done
           echo "TASK_IDS=$task_ids" >> $GITHUB_ENV
           echo "INSTANCE_IDS=$instance_ids" >> $GITHUB_ENV
-          echo "Associated EC2 Instance IDs:"
-          echo "$instance_ids"
+          echo "Associated EC2 Instance IDs: $instance_ids"
           else
           echo "Task count is 0. Skipping.."
           fi
