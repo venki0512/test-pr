@@ -97,6 +97,7 @@ jobs:
       - name: Terminate EC2 instances without running tasks and Downsize ASG
         run: |
           IFS=' ' read -ra CONTAINER_INSTANCE_IDS <<< "$CONTAINER_INSTANCE_IDS"
+          no_running_tasks=true
           for container_instance_id in "${CONTAINER_INSTANCE_IDS[@]}"; do
             echo "Running tasks on Container Instance: $container_instance_id"
             instance_id=$(aws ecs describe-container-instances --cluster ${{ github.event.inputs.cluster-name }} --container-instances $container_instance_id --query 'containerInstances[*].ec2InstanceId' --output text)
@@ -129,6 +130,9 @@ jobs:
            fi
           fi
           done
+          if $no_running_tasks; then
+            echo "No running tasks for this step"
+          fi
    
 #       - name: Terminate EC2 instances without running tasks
 #         run: |
