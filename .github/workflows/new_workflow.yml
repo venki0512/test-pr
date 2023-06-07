@@ -45,7 +45,7 @@ jobs:
       - name: Create SSM parameter
         run: |
           if [[ "${{ env.TASK_COUNT }}" != "0" ]]; then
-          aws ssm put-parameter --name /adl/nonprod/${{ github.event.inputs.cluster-name }} --value ${{ env.TASK_COUNT }} --type String --overwrite
+          aws ssm put-parameter --name /adl/nonprod/${{ github.event.inputs.service-name }} --value ${{ env.TASK_COUNT }} --type String --overwrite
           else
           echo "Task count is 0. Skipping parameter creation."
           fi
