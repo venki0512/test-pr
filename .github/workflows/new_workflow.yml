@@ -75,19 +75,33 @@ jobs:
           else
           echo "Task count is 0. Skipping.."
           fi
-
-      - name: Print running tasks on container instances
+     
+      - name: Terminate EC2 instances without running tasks
         run: |
           IFS=' ' read -ra CONTAINER_INSTANCE_IDS <<< "$CONTAINER_INSTANCE_IDS"
           for instance_id in "${CONTAINER_INSTANCE_IDS[@]}"; do
             echo "Running tasks on Container Instance: $instance_id"
             running_tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance $instance_id --desired-status RUNNING --query 'taskArns[*]' --output text)
-            if [[ -n "$running_tasks" ]]; then
-              echo "$running_tasks"
+            if [[ -z "$running_tasks" ]]; then
+               echo "No running tasks on this instance. Terminating instance: $instance_id"
+               aws ec2 terminate-instances --instance-ids $instance_id
             else
-            echo "No running tasks on this instance."
-            fi
+             echo "Running tasks found on this instance. Skipping termination."
+           fi
           done
+          
+#       - name: Print running tasks on container instances
+#         run: |
+#           IFS=' ' read -ra CONTAINER_INSTANCE_IDS <<< "$CONTAINER_INSTANCE_IDS"
+#           for instance_id in "${CONTAINER_INSTANCE_IDS[@]}"; do
+#             echo "Running tasks on Container Instance: $instance_id"
+#             running_tasks=$(aws ecs list-tasks --cluster ${{ github.event.inputs.cluster-name }} --container-instance $instance_id --desired-status RUNNING --query 'taskArns[*]' --output text)
+#             if [[ -n "$running_tasks" ]]; then
+#               echo "$running_tasks"
+#             else
+#             echo "No running tasks on this instance."
+#             fi
+#           done
 
 
       
