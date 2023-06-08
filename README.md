@@ -20,7 +20,7 @@ inputs:
   service-name:
     description: 'ECS Service Name'
     required: true
-
+```
 4. Set up AWS credentials and permissions:
   * Ensure that the necessary permissions are granted to the IAM role associated with your GitHub Actions workflow. The permissions section in the workflow file specifies the required permissions for the workflow.
 
