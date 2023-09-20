@@ -3,7 +3,6 @@
 This GitHub Actions workflow allows you to stop an ECS service in an AWS cluster. It automates the process of stopping running tasks, creating an SSM parameter, and terminating EC2 instances associated with the service.
 
 ## Usage
-
 To use this workflow, follow these steps:
 
 1. Create a workflow file (e.g., `stop-service.yml`) in the `.github/workflows/` directory of your repository.
